@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>iKuai 历史版本下载</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+<div id="app">
+    <div>
+        <label for="bit">系统位数：</label>
+        <select id="bit" v-model="form.bit">
+            <option value="64">64</option>
+            <option value="32">32</option>
+        </select>
+    </div>
+    <div>
+        <label for="installation-type">固件格式：</label>
+        <select id="installation-type" v-model="form.type">
+            <option v-for="(value, key) in typeDict" v-bind:value="{url: key, suffix: value}">{{ value }}</option>
+        </select>
+    </div>
+    <div>
+        <label for="version">版本号：</label>
+        <select id="version" v-model="form.version">
+            <template v-for="each in [form.version].concat(historyVersionList)">
+                <option v-if="each.includes('_')" v-bind:value="each">{{ each.split("_")[0]}}</option>
+            </template>
+        </select>
+    </div>
+    <div>
+        <p>历史日志：<a href="https://www.ikuai8.com/index.php?option=com_content&view=article&id=331">iKuai - 历史日志</a>
+        </p>
+        <p>下载链接：<a v-bind:href="downloadLink">{{ downloadLink }}</a></p>
+    </div>
+</div>
+</body>
+<script>
+    const {createApp} = Vue
+    createApp({
+        data() {
+            return {
+                typeDict: {
+                    iso: "iso",
+                    img: "img.gz",
+                    ghost: "gho",
+                    patch: "bin",
+                },
+                historyVersionList: [
+                    "3.6.11",
+                    "3.6.10_Build202210251458",
+                    "3.6.9",
+                    "3.6.8_Build202209231604",
+                    "3.6.7_Build202208301257",
+                    "3.6.6_Build202208121750",
+                    "3.6.5_Build202206011520",
+                    "3.6.4_Build202205181711",
+                    "3.6.3_Build202204071133",
+                    "3.6.2_Build202203291450",
+                    "3.6.1_Build202203070900",
+                    "3.6.0_Build202202171351",
+
+                    "3.5.12_Build202201211053",
+                    "3.5.11_Build202112031159",
+                    "3.5.10_Build202110131033",
+                    "3.5.9_Build202109301157",
+                    "3.5.8_Build202109231226",
+                    "3.5.7_Build202108241611",
+                    "3.5.6_Build202107261931",
+                    "3.5.5_Build202107212134",
+                    "3.5.4_Build202104211550",
+                    "3.5.3_Build202104151018",
+                    "3.5.2_Build202103290906",
+                    "3.5.1_Build202103100841",
+                    "3.5.0_Build202103081445",
+                    
+                    "3.4.9_Build202101291904",
+                    "3.4.8_Build202012291059",
+                    "3.4.7_Build202012140950",
+                    "3.4.6_Buil202011301134",
+                    "3.4.5_Buil202011091521",
+                    "3.4.4_Build20200928163",
+                    "3.4.3_Build202009141915",
+                    "3.4.2_Build202009041019",
+                    "3.4.0_Build202007281918",
+
+                    "3.3.9_Build202006150942",
+                    "3.3.8_Build202006021453",
+                    "3.3.7_Build202005081035",
+                    "3.3.6_Build202005071058",
+                    "3.3.5_Build202004211952",
+                    "3.3.4_Build202004131744",
+                    "3.3.3_Build202002040918",
+                    "3.3.2_Build202001091117",
+                    "3.3.1_Build202001071211",
+                    "3.3.0_Build201912171705",
+                    "3.2.9_Build201911151520",
+                    "3.2.8_Build201910101758",
+                    "3.2.7_Build201909101852",
+                    "3.2.6_Build201908261120",
+                    "3.2.5_Build201908191404",
+                    "3.2.4_Build201907151220",
+                    "3.2.3_Build201907041834",
+                    "3.2.2_Build201906171500",
+                    "3.2.1_Build201906121726",
+                    "3.2.0_Build201906041003",
+                    "3.1.9_Build201904221629",
+                    "3.1.8_Build201904121110",
+                    "3.1.7_Build201903181437",
+                    "3.1.6_Build201903040937",
+                    "3.1.5_Build201901241133",
+                    "3.1.4_Build201901081017",
+                    "3.1.3_Build201812191022",
+                    "3.1.2_Build201811231508",
+                    "3.1.1_Build201809291222",
+                    "3.1.0_Build201808301122",
+
+                    "3.0.9_Build201807041114",
+                    "3.0.8_Build201806261037",
+                    "3.0.7_Build201804191004",
+                    "3.0.6_Build201803271831",
+                    "3.0.5_Build201803121759",
+                    "3.0.4_Build201802121300",
+                    "3.0.3_Build201801121634",
+                    "3.0.2_Build201712291434",
+                    "3.0.1_Build201712231914",
+                    "3.0.0_Build201712201702"
+                ],
+                form: {
+                    type: {url: "iso", suffix: "iso"},
+                    bit: "64",
+                    version: "3.6.12_Build202212231532"
+                }
+            }
+        },
+        computed: {
+            downloadLink() {
+                return "https://patch.ikuai8.com/3.x/" + this.form.type.url + "/iKuai8_x" + this.form.bit + "_" + this.form.version + "." + this.form.type.suffix;
+            },
+            versionList() {
+                return [this.version].concat(this.historyVersionList);
+            }
+        }
+    }).mount("#app")
+</script>
+</html>
