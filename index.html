@@ -23,7 +23,7 @@
     <div>
         <label for="version">版本号：</label>
         <select id="version" v-model="form.version">
-            <template v-for="each in [form.version].concat(historyVersionList)">
+            <template v-for="each in historyVersionList">
                 <option v-if="each.includes('_')" v-bind:value="each">{{ each.split("_")[0]}}</option>
             </template>
         </select>
@@ -37,6 +37,7 @@
 </body>
 <script>
     const {createApp} = Vue
+    LATEST_VERSION = "3.7.8_Build202311201048"
     createApp({
         data() {
             return {
@@ -47,6 +48,7 @@
                     patch: "bin",
                 },
                 historyVersionList: [
+                    LATEST_VERSION,
                     "3.7.7_Build202311080959",
                     "3.7.6_Build202309081651",
                     "3.7.5_Build202308021413",
@@ -140,16 +142,13 @@
                 form: {
                     type: {url: "iso", suffix: "iso"},
                     bit: "64",
-                    version: "3.7.8_Build202311201048"
+                    version: LATEST_VERSION
                 }
             }
         },
         computed: {
             downloadLink() {
                 return "https://patch.ikuai8.com/3.x/" + this.form.type.url + "/iKuai8_x" + this.form.bit + "_" + this.form.version + "." + this.form.type.suffix;
-            },
-            versionList() {
-                return [this.version].concat(this.historyVersionList);
             }
         }
     }).mount("#app")
