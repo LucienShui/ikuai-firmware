@@ -6,6 +6,8 @@
 
 官方有固定的下载地址，只是没有罗列出来。此页面可根据用户所选生成官方的下载链接。
 
+写了个脚本 [auto_commit.sh](./auto_commit.sh)，使用 Github Actions 每天早上 6:00 进行调度。
+
 ## Reference
 
 + [爱快路由器 历史版本下载方法（持续更新）](https://zhuanlan.zhihu.com/p/486466800)
