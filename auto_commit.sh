@@ -19,9 +19,17 @@ parse_version_list() {
 }
 
 main() {
-    ONLINE_LATEST_VERSION="$(curl -sSL 'https://www.ikuai8.com/component/download' | grep 'btn btn_64' | grep "iso" | awk -F 'x64_' '{ print $2 }' | awk -F '.iso' '{ print $1 }')"
     LOCAL_LATEST_VERSION="$(head -n 1 version_list.txt)"
+    if [ -z "${LOCAL_LATEST_VERSION}" ]; then
+        echo "Error: LOCAL_LATEST_VERSION is empty."
+        exit 1
+    fi
 
+    ONLINE_LATEST_VERSION="$(curl -sSL 'https://www.ikuai8.com/component/download' | grep 'btn btn_64' | grep "iso" | awk -F 'x64_' '{ print $2 }' | awk -F '.iso' '{ print $1 }')"
+    if [ -z "${ONLINE_LATEST_VERSION}" ]; then
+        echo "Error: ONLINE_LATEST_VERSION is empty."
+        exit 1
+    fi
 
     if [ "${LOCAL_LATEST_VERSION}" != "${ONLINE_LATEST_VERSION}" ]; then
         BUF_FILE="${TMP_DIR}/version_list.txt"
