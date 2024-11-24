@@ -8,6 +8,13 @@
 <body>
 <div id="app">
     <div>
+        <label for="edition">固件类型：</label>
+        <select id="edition" v-model="form.edition">
+            <option value="free">免费版</option>
+            <option value="enterprise">企业版</option>
+        </select>
+    </div>
+    <div>
         <label for="bit">系统位数：</label>
         <select id="bit" v-model="form.bit">
             <option value="64">64</option>
@@ -17,13 +24,13 @@
     <div>
         <label for="installation-type">固件格式：</label>
         <select id="installation-type" v-model="form.type">
-            <option v-for="(value, key) in typeDict" v-bind:value="{url: key, suffix: value}">{{ value }}</option>
+            <option v-for="(value, key) in filteredTypeDict" :value="{url: key, suffix: value}">{{ value }}</option>
         </select>
     </div>
     <div>
         <label for="version">版本号：</label>
         <select id="version" v-model="form.version">
-            <template v-for="each in historyVersionList">
+            <template v-for="each in filteredVersionList">
                 <option v-if="each.includes('_')" v-bind:value="each">{{ each.split("_")[0]}}</option>
             </template>
         </select>
@@ -132,6 +139,10 @@
         "3.0.1_Build201712231914",
         "3.0.0_Build201712201702"
     ];
+
+    const EnterpriseVersionList = [
+        "3.7.16_Build202411141702"
+    ]
     
     createApp({
         data() {
@@ -143,7 +154,9 @@
                     patch: "bin",
                 },
                 historyVersionList: VersionList,
+                historyEnterpriseVersionList: EnterpriseVersionList,
                 form: {
+                    edition: "free",
                     type: {url: "iso", suffix: "iso"},
                     bit: "64",
                     version: VersionList[0]
@@ -151,8 +164,57 @@
             }
         },
         computed: {
+            filteredTypeDict() {
+                if (this.form.edition === "enterprise") {
+                    return {patch: "bin"};
+                }
+                return this.typeDict;
+            },
+            filteredBitOptions() {
+                return this.form.bit;
+            },
+            filteredVersionList() {
+                if (this.form.edition === "enterprise") {
+                    return this.historyEnterpriseVersionList
+                }
+                return this.historyVersionList;
+            },
             downloadLink() {
-                return "https://patch.ikuai8.com/3.x/" + this.form.type.url + "/iKuai8_x" + this.form.bit + "_" + this.form.version + "." + this.form.type.suffix;
+                const baseUrl =
+                    this.form.edition === "enterprise"
+                        ? "https://patch.ikuai8.com/ent/"
+                        : "https://patch.ikuai8.com/3.x/";
+
+                let link =
+                    baseUrl +
+                    (this.form.edition === "enterprise" ? "" : this.form.type.url) +
+                    "/iKuai8_x" +
+                    this.form.bit +
+                    "_" +
+                    this.form.version;
+
+                if (this.form.edition === "enterprise") {
+                    const index = link.indexOf("Build");
+                    link = link.slice(0, index) + "Enterprise_" + link.slice(index);
+                }
+
+                return link + "." + this.form.type.suffix;
+            }
+        },
+        watch: {
+            "form.edition"(newEdition) {
+                // 重置为第一项
+                const firstTypeOption = Object.entries(this.filteredTypeDict)[0];
+                if (firstTypeOption) {
+                    const [key, value] = firstTypeOption;
+                    this.form.type = { url: key, suffix: value };
+                }
+                if (this.filteredBitOptions.length > 0) {
+                    this.form.bit = this.filteredBitOptions;
+                }
+                if (this.filteredVersionList.length > 0) {
+                    this.form.version = this.filteredVersionList[0];
+                }
             }
         }
     }).mount("#app")
