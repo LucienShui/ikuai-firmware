@@ -1,4 +1,5 @@
-# iKuai 免费版与企业版历史固件下载页
+# iKuai x86历史固件下载页
+> 包含：免费版、企业版、OEM
 
 访问 [lucienshui.github.io/ikuai-firmware](https://lucienshui.github.io/ikuai-firmware) 即可
 

@@ -12,6 +12,7 @@
         <select id="edition" v-model="form.edition">
             <option value="free">免费版</option>
             <option value="enterprise">企业版</option>
+            <option value="oem">OEM</option>
         </select>
     </div>
     <div>
@@ -178,6 +179,11 @@
         "3.1.7_Build201903181458",
         "3.1.6_Build201903061009"
     ]
+
+    const OEMVersionList = [
+        "3.7.14_Build202408071731",
+        "3.6.5_Build202207280937"
+    ]
     
     createApp({
         data() {
@@ -190,6 +196,7 @@
                 },
                 historyVersionList: VersionList,
                 historyEnterpriseVersionList: EnterpriseVersionList,
+                historyOEMVersionList: OEMVersionList,
                 form: {
                     edition: "free",
                     type: {url: "iso", suffix: "iso"},
@@ -200,7 +207,7 @@
         },
         computed: {
             filteredTypeDict() {
-                if (this.form.edition === "enterprise") {
+                if (this.form.edition === "enterprise" || this.form.edition === "oem") {
                     return {patch: "bin"};
                 }
                 return this.typeDict;
@@ -211,19 +218,18 @@
             filteredVersionList() {
                 if (this.form.edition === "enterprise") {
                     return this.historyEnterpriseVersionList
+                } else if (this.form.edition === "oem") {
+                    return this.historyOEMVersionList
                 }
                 return this.historyVersionList;
             },
             downloadLink() {
-                const baseUrl =
-                    this.form.edition === "enterprise"
-                        ? "https://patch.ikuai8.com/ent/"
-                        : "https://patch.ikuai8.com/3.x/";
+                let baseUrl = this.form.edition === "enterprise" ? "https://patch.ikuai8.com/ent/" : "https://patch.ikuai8.com/3.x/";
 
                 let link =
                     baseUrl +
-                    (this.form.edition === "enterprise" ? "" : this.form.type.url) +
-                    "/iKuai8_x" +
+                    ((this.form.edition === "enterprise") ? "" : this.form.type.url) +
+                    (this.form.edition === "oem" ? "/oem_x" : "/iKuai8_x") +
                     this.form.bit +
                     "_" +
                     this.form.version;
