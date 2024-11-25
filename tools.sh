@@ -233,7 +233,7 @@ fetch_and_commit() {
     if [ "${FREE_RESULT}" -eq 0 ] || [ "${ENTERPRISE_RESULT}" -eq 0 ]; then
         git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git add version_list.txt index.html
+        git add version_list.txt version_enterprise_list.txt
         git commit -m "$(date +'%Y%m%d') add ${COMMIT_MESSAGE}"
     fi
 }
