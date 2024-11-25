@@ -8,6 +8,14 @@
 <body>
 <div id="app">
     <div>
+        <label for="edition">固件类型：</label>
+        <select id="edition" v-model="form.edition">
+            <option value="free">免费版</option>
+            <option value="enterprise">企业版</option>
+            <option value="oem">OEM</option>
+        </select>
+    </div>
+    <div>
         <label for="bit">系统位数：</label>
         <select id="bit" v-model="form.bit">
             <option value="64">64</option>
@@ -17,13 +25,13 @@
     <div>
         <label for="installation-type">固件格式：</label>
         <select id="installation-type" v-model="form.type">
-            <option v-for="(value, key) in typeDict" v-bind:value="{url: key, suffix: value}">{{ value }}</option>
+            <option v-for="(value, key) in filteredTypeDict" :value="{url: key, suffix: value}">{{ value }}</option>
         </select>
     </div>
     <div>
         <label for="version">版本号：</label>
         <select id="version" v-model="form.version">
-            <template v-for="each in historyVersionList">
+            <template v-for="each in filteredVersionList">
                 <option v-if="each.includes('_')" v-bind:value="each">{{ each.split("_")[0]}}</option>
             </template>
         </select>
@@ -132,6 +140,50 @@
         "3.0.1_Build201712231914",
         "3.0.0_Build201712201702"
     ];
+
+    const EnterpriseVersionList = [
+        "3.7.16_Build202411141702",
+        "3.7.14_Build202408011115",
+        "3.7.13_Build202406212118",
+        "3.7.12_Build202406112127",
+        "3.7.11_Build202403051042",
+        "3.7.10_Build202401231340",
+        "3.7.9_Build202401121851",
+        "3.7.8_Build202311201051",
+        "3.7.5_Build202308081511",
+        "3.7.2_Build202304211809",
+        "3.6.13_Build202301131535",
+        "3.6.12_Build202212231534",
+        "3.6.11_Build202211181235",
+        "3.6.10_Build202210251916",
+        "3.6.9_Build202210211048",
+        "3.6.8_Build202209290853",
+        "3.6.5_Build202206061406",
+        "3.6.3_Build202204081243",
+        "3.5.12_Build202201211054",
+        "3.5.11_Build202112031204",
+        "3.5.4_Build202105141825",
+        "3.4.9_Build202101291909",
+        "3.4.8_Build202101041353",
+        "3.4.8_Build202101041353",
+        "3.4.4_Build202010091231",
+        "3.4.3_Build202009171210",
+        "3.2.9_Build201911180955",
+        "3.2.8_Build201910171328",
+        "3.2.7_Build201909201024",
+        "3.2.6_Build201908261121",
+        "3.2.2_Build201906191124",
+        "3.1.9_Build201904281025",
+        "3.1.8_Build201904121112",
+        "3.1.7_Build201903181458",
+        "3.1.7_Build201903181458",
+        "3.1.6_Build201903061009"
+    ]
+
+    const OEMVersionList = [
+        "3.7.14_Build202408071731",
+        "3.6.5_Build202207280937"
+    ]
     
     createApp({
         data() {
@@ -143,7 +195,10 @@
                     patch: "bin",
                 },
                 historyVersionList: VersionList,
+                historyEnterpriseVersionList: EnterpriseVersionList,
+                historyOEMVersionList: OEMVersionList,
                 form: {
+                    edition: "free",
                     type: {url: "iso", suffix: "iso"},
                     bit: "64",
                     version: VersionList[0]
@@ -151,8 +206,56 @@
             }
         },
         computed: {
+            filteredTypeDict() {
+                if (this.form.edition === "enterprise" || this.form.edition === "oem") {
+                    return {patch: "bin"};
+                }
+                return this.typeDict;
+            },
+            filteredBitOptions() {
+                return this.form.bit;
+            },
+            filteredVersionList() {
+                if (this.form.edition === "enterprise") {
+                    return this.historyEnterpriseVersionList
+                } else if (this.form.edition === "oem") {
+                    return this.historyOEMVersionList
+                }
+                return this.historyVersionList;
+            },
             downloadLink() {
-                return "https://patch.ikuai8.com/3.x/" + this.form.type.url + "/iKuai8_x" + this.form.bit + "_" + this.form.version + "." + this.form.type.suffix;
+                let baseUrl = this.form.edition === "enterprise" ? "https://patch.ikuai8.com/ent/" : "https://patch.ikuai8.com/3.x/";
+
+                let link =
+                    baseUrl +
+                    ((this.form.edition === "enterprise") ? "" : this.form.type.url) +
+                    (this.form.edition === "oem" ? "/oem_x" : "/iKuai8_x") +
+                    this.form.bit +
+                    "_" +
+                    this.form.version;
+
+                if (this.form.edition === "enterprise") {
+                    const index = link.indexOf("Build");
+                    link = link.slice(0, index) + "Enterprise_" + link.slice(index);
+                }
+
+                return link + "." + this.form.type.suffix;
+            }
+        },
+        watch: {
+            "form.edition"(newEdition) {
+                // 重置为第一项
+                const firstTypeOption = Object.entries(this.filteredTypeDict)[0];
+                if (firstTypeOption) {
+                    const [key, value] = firstTypeOption;
+                    this.form.type = { url: key, suffix: value };
+                }
+                if (this.filteredBitOptions.length > 0) {
+                    this.form.bit = this.filteredBitOptions;
+                }
+                if (this.filteredVersionList.length > 0) {
+                    this.form.version = this.filteredVersionList[0];
+                }
             }
         }
     }).mount("#app")
