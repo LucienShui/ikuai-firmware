@@ -19,7 +19,7 @@ parse_version_list() {
 }
 
 fetch_free() {
-    LOCAL_LATEST_ENTERPRISE_VERSION="$(head -n 1 version_enterprise_list.txt | awk -F'_' '{print $1}')"
+    LOCAL_LATEST_VERSION="$(head -n 1 version_list.txt | awk -F'_' '{print $1}')"
     if [ -z "${LOCAL_LATEST_VERSION}" ]; then
         echo "Error: LOCAL_LATEST_VERSION is empty."
         return 0
