@@ -15,7 +15,7 @@ jobs:
         fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
     - name: Create local changes
       run: |
-        sh auto_commit.sh
+        bash tools.sh fetch_and_commit
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
