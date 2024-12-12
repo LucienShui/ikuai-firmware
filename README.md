@@ -1,4 +1,5 @@
-# iKuai x86历史固件下载页
+# iKuai x86 历史固件下载页
+
 > 包含：免费版、企业版、OEM
 
 访问 [lucienshui.github.io/ikuai-firmware](https://lucienshui.github.io/ikuai-firmware) 即可
@@ -7,7 +8,7 @@
 
 官方有固定的下载地址，只是没有罗列出来。此页面可根据用户所选生成官方的下载链接。
 
-写了个脚本 [auto_commit.sh](./auto_commit.sh)，使用 Github Actions 每天早上 6:00 进行调度。
+写了个[GitHub Actions 脚本](./.github/workflows/update-firmware-version-list.yml)，每天早上 6:00 进行调度。
 
 ## Reference
 
