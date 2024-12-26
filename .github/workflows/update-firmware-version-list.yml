@@ -3,7 +3,7 @@ name: Update firmware version list
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 6 * * *'
+    - cron: '0 22 * * *' # UTC+8 6:00
 
 jobs:
   main:
