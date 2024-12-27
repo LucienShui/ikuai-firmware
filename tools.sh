@@ -174,8 +174,8 @@ generate() {
 
                 let link =
                     baseUrl +
-                    ((this.form.edition === "enterprise") ? "" : this.form.type.url) +
-                    (this.form.edition === "oem" ? "/oem_x" : "/iKuai8_x") +
+                    ((this.form.edition === "enterprise") ? "" : this.form.type.url + "/") +
+                    (this.form.edition === "oem" ? "oem_x" : "iKuai8_x") +
                     this.form.bit +
                     "_" +
                     this.form.version;
