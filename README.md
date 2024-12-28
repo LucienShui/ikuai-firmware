@@ -8,7 +8,7 @@
 
 官方有固定的下载地址，只是没有罗列出来。此页面可根据用户所选生成官方的下载链接。
 
-写了个[GitHub Actions 脚本](./.github/workflows/update-firmware-version-list.yml)，每天早上 6:00 进行调度。
+写了个 [GitHub Actions 脚本](./.github/workflows/update-firmware-version-list.yml)，每天北京时间早上 6:00 进行调度。
 
 ## Reference
 

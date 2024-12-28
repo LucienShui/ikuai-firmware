@@ -74,6 +74,7 @@ generate() {
     VERSION_ENTERPRISE_LIST="$(parse_version_list "version_enterprise_list.txt")"
 
     mkdir -p pages
+    cp resources/favicon.ico pages/
 
     cat << EOF > pages/index.html
 <!DOCTYPE html>
@@ -82,9 +83,26 @@ generate() {
     <meta charset="UTF-8">
     <title>iKuai 历史版本下载</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.8.1/github-markdown.min.css">
+    <style>
+        .markdown-body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+        }
+
+        @media (max-width: 767px) {
+            .markdown-body {
+                padding: 15px;
+            }
+        }
+    </style>
 </head>
-<body>
+<body class="markdown-body">
 <div id="app">
+    <h1>iKuai 历史固件下载</h1>
     <div>
         <label for="edition">固件类型：</label>
         <select id="edition" v-model="form.edition">
@@ -114,13 +132,17 @@ generate() {
             </template>
         </select>
     </div>
+    <h2>下载链接</h2>
     <div>
-        <p>历史日志：<a href="https://www.ikuai8.com/index.php?option=com_content&view=article&id=331">iKuai - 历史日志</a>
-        </p>
-        <p>下载链接：<a v-bind:href="downloadLink">{{ downloadLink }}</a></p>
+        <a v-bind:href="downloadLink">{{ downloadLink }}</a>
     </div>
 </div>
 </body>
+<footer style="text-align: center" class="markdown-body">
+    <a href="https://github.com/LucienShui/ikuai-firmware" target="_blank">GitHub</a>
+    |
+    <a href="https://www.ikuai8.com/index.php?option=com_content&view=article&id=331">iKuai 更新日志</a>
+</footer>
 <script>
     const {createApp} = Vue;
     const VersionList = ${VERSION_LIST};
@@ -247,7 +269,7 @@ main() {
             generate
             ;;
         *)
-            echo "Usage: daec <init|update|reload|download|show> args..."
+            echo "Usage: bash tools.sh <fetch_and_commit|generate>"
             ;;
     esac
 }
