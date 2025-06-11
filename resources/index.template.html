@@ -55,6 +55,7 @@
     </div>
     <h2>下载链接</h2>
     <div>
+        <blockquote class="annotation">{{ typeAnnotation }}</blockquote>
         <a v-bind:href="downloadLink">{{ downloadLink }}</a>
     </div>
 </div>
@@ -129,6 +130,14 @@
                 }
 
                 return link + "." + this.form.type.suffix;
+            },
+            typeAnnotation() {
+                return {
+                    iso: "光盘镜像文件格式，可使用U盘启动盘等方式进行安装",
+                    "img.gz": "镜像的一种，可通过写盘工具软件进行安装",
+                    gho: "用 GHOST 安装方式时使用的安装包",
+                    bin: "3.x 版本之间可以升降级的使用包"
+                }[this.form.type.suffix] || "";
             }
         },
         watch: {
