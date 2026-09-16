@@ -1,12 +1,14 @@
 # iKuai x86 历史固件下载页
 
-> 包含：免费版、企业版、OEM
+> 包含：3.0 免费版、企业版、OEM、4.0 免费版
 
 访问 [lucienshui.github.io/ikuai-firmware](https://lucienshui.github.io/ikuai-firmware) 即可
 
 ## 原理
 
 官方有固定的下载地址，只是没有罗列出来。此页面可根据用户所选生成官方的下载链接。
+
+3.x 免费版 / 企业版从 [Version_all](https://download.ikuai8.com/submit3x/Version_all) 取最新版本；4.0 免费版从[官网下载页](https://www.ikuai8.com/component/download)解析当前直链。历史版本由本仓库累积。
 
 写了个 [GitHub Actions 脚本](./.github/workflows/update-firmware-version-list.yml)，每天北京时间早上 6:00 进行调度。
 

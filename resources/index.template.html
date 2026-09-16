@@ -25,9 +25,10 @@
 <div id="app">
     <h1>iKuai 历史固件下载</h1>
     <div>
-        <label for="edition">固件类型：</label>
+        <label for="edition">固件：</label>
         <select id="edition" v-model="form.edition">
-            <option value="free">免费版</option>
+            <option value="free">3.0 免费版</option>
+            <option value="v4">4.0 免费版</option>
             <option value="enterprise">企业版</option>
             <option value="oem">OEM</option>
         </select>
@@ -56,6 +57,10 @@
     <h2>下载链接</h2>
     <div>
         <blockquote class="annotation">{{ typeAnnotation }}</blockquote>
+        <blockquote v-if="form.edition === 'v4'" class="annotation">
+            4.0 不能降回 3.x，升级前请备份。
+            <a href="https://www.ikuai8.com/support/cjwt/2021-10-15-08-37-02/4-0.html" target="_blank" rel="noopener noreferrer">升级注意事项</a>
+        </blockquote>
         <a v-bind:href="downloadLink">{{ downloadLink }}</a>
     </div>
 </div>
@@ -69,6 +74,7 @@
     const {createApp} = Vue;
     const VersionList = {{VERSION_LIST}};
     const EnterpriseVersionList = {{VERSION_ENTERPRISE_LIST}};
+    const Version4List = {{VERSION_4_LIST}};
 
     const OEMVersionList = [
         "3.7.14_Build202408071731",
@@ -87,6 +93,7 @@
                 historyVersionList: VersionList,
                 historyEnterpriseVersionList: EnterpriseVersionList,
                 historyOEMVersionList: OEMVersionList,
+                historyV4VersionList: Version4List,
                 form: {
                     edition: "free",
                     type: {url: "iso", suffix: "iso"},
@@ -100,6 +107,9 @@
                 if (this.form.edition === "enterprise" || this.form.edition === "oem") {
                     return {patch: "bin"};
                 }
+                if (this.form.edition === "v4") {
+                    return {iso: "iso", patch: "bin"};
+                }
                 return this.typeDict;
             },
             filteredBitOptions() {
@@ -110,6 +120,8 @@
                     return this.historyEnterpriseVersionList
                 } else if (this.form.edition === "oem") {
                     return this.historyOEMVersionList
+                } else if (this.form.edition === "v4") {
+                    return this.historyV4VersionList
                 }
                 return this.historyVersionList;
             },
@@ -136,7 +148,9 @@
                     iso: "光盘镜像文件格式，可使用U盘启动盘等方式进行安装",
                     "img.gz": "镜像的一种，可通过写盘工具软件进行安装",
                     gho: "用 GHOST 安装方式时使用的安装包",
-                    bin: "3.x 版本之间可以升降级的使用包"
+                    bin: this.form.edition === "v4"
+                        ? "4.x 版本之间可以升降级的使用包"
+                        : "3.x 版本之间可以升降级的使用包"
                 }[this.form.type.suffix] || "";
             }
         },

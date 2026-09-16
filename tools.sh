@@ -69,9 +69,35 @@ fetch_enterprise() {
     return 0
 }
 
+fetch_v4() {
+    LOCAL_LATEST_V4_VERSION="$(head -n 1 version_4_list.txt)"
+    if [ -z "${LOCAL_LATEST_V4_VERSION}" ]; then
+        echo "ERROR: LOCAL_LATEST_V4_VERSION is empty."
+        return 1
+    fi
+
+    ONLINE_LATEST_V4_VERSION="$(curl -sS -A "Mozilla/5.0" "https://www.ikuai8.com/component/download" | grep -oE 'iKuai8_x64_4\.[0-9.]+_Build[0-9]+\.(iso|bin)' | head -n 1 | sed -E 's/iKuai8_x64_([0-9.]+_Build[0-9]+)\.(iso|bin)/\1/')"
+    if [ -z "${ONLINE_LATEST_V4_VERSION}" ]; then
+        echo "ERROR: ONLINE_LATEST_V4_VERSION is empty."
+        return 1
+    fi
+    if [ "${LOCAL_LATEST_V4_VERSION}" = "${ONLINE_LATEST_V4_VERSION}" ]; then
+        echo "INFO: Same version, skip."
+        return 1
+    fi
+    BUF_V4_FILE="${TMP_DIR}/version_4_list.txt"
+    echo "${ONLINE_LATEST_V4_VERSION}" > "${BUF_V4_FILE}"
+    cat version_4_list.txt >> "${BUF_V4_FILE}"
+    /usr/bin/env cp "${BUF_V4_FILE}" version_4_list.txt
+
+    echo "${ONLINE_LATEST_V4_VERSION}"
+    return 0
+}
+
 generate() {
     VERSION_LIST="$(parse_version_list "version_list.txt")"
     VERSION_ENTERPRISE_LIST="$(parse_version_list "version_enterprise_list.txt")"
+    VERSION_4_LIST="$(parse_version_list "version_4_list.txt")"
 
     mkdir -p pages
     cp resources/favicon.ico pages/
@@ -80,6 +106,7 @@ generate() {
     sed \
         -e "s|{{VERSION_LIST}}|${VERSION_LIST}|g" \
         -e "s|{{VERSION_ENTERPRISE_LIST}}|${VERSION_ENTERPRISE_LIST}|g" \
+        -e "s|{{VERSION_4_LIST}}|${VERSION_4_LIST}|g" \
         resources/index.template.html > pages/index.html
 }
 
@@ -90,6 +117,9 @@ fetch_and_commit() {
     ONLINE_LATEST_ENTERPRISE_VERSION="$(fetch_enterprise)"
     ENTERPRISE_RESULT="${?}"
 
+    ONLINE_LATEST_V4_VERSION="$(fetch_v4)"
+    V4_RESULT="${?}"
+
     COMMIT_MESSAGE=""
 
     if [ "${FREE_RESULT}" -eq 0 ]; then
@@ -97,16 +127,23 @@ fetch_and_commit() {
     fi
     
     if [ "${ENTERPRISE_RESULT}" -eq 0 ]; then
-        if [ "${FREE_RESULT}" -eq 0 ]; then
+        if [ -n "${COMMIT_MESSAGE}" ]; then
             COMMIT_MESSAGE="${COMMIT_MESSAGE} and "
         fi
         COMMIT_MESSAGE="${COMMIT_MESSAGE}${ONLINE_LATEST_ENTERPRISE_VERSION}"
     fi
 
-    if [ "${FREE_RESULT}" -eq 0 ] || [ "${ENTERPRISE_RESULT}" -eq 0 ]; then
+    if [ "${V4_RESULT}" -eq 0 ]; then
+        if [ -n "${COMMIT_MESSAGE}" ]; then
+            COMMIT_MESSAGE="${COMMIT_MESSAGE} and "
+        fi
+        COMMIT_MESSAGE="${COMMIT_MESSAGE}${ONLINE_LATEST_V4_VERSION}"
+    fi
+
+    if [ "${FREE_RESULT}" -eq 0 ] || [ "${ENTERPRISE_RESULT}" -eq 0 ] || [ "${V4_RESULT}" -eq 0 ]; then
         git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git add version_list.txt version_enterprise_list.txt
+        git add version_list.txt version_enterprise_list.txt version_4_list.txt
         git commit -m "$(date +'%Y%m%d') add ${COMMIT_MESSAGE}"
     fi
 }
